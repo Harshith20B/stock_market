@@ -1,4 +1,4 @@
-const Stock = require("../models/stock.model.js");
+const Stock = require("../models/Stock.js");
 
 // Get all stock symbols (just name and maybe _id)
 const getAllStocks = async (req, res) => {

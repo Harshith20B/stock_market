@@ -3,7 +3,7 @@ const {
   getAllStocks,
   getStockBySymbol,
   getStockInsights
-} = require("../controllers/stock.controller");
+} = require("../controllers/stockController");
 
 const router = express.Router();
 
