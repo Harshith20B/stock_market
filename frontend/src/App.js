@@ -5,6 +5,7 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import VerifyOtp from './pages/VerifyOtp';
 import Profile from './pages/Profile';
+import Watchlist from './pages/Watchlist';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -34,6 +35,12 @@ function App() {
           </div>
 
           <div className="flex items-center space-x-4">
+            {isLoggedIn && (
+              <Link to="/watchlist" className="text-white hover:text-blue-200">
+                Watchlist
+              </Link>
+            )}
+            
             <DarkModeToggle />
 
             {isLoggedIn ? (
@@ -86,6 +93,11 @@ function App() {
         <Route path="/profile" element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/watchlist" element={
+          <ProtectedRoute>
+            <Watchlist />
           </ProtectedRoute>
         } />
         <Route path="/" element={<div className="container mx-auto py-8 px-4 text-center dark:text-white">Dashboard Coming Soon</div>} />

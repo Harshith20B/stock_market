@@ -17,14 +17,6 @@ const stockCategories = [
   { id: 'realestate', name: 'Real Estate' },
 ];
 
-// Dummy watchlist data
-const dummyWatchlist = [
-  { id: 1, symbol: 'AAPL', name: 'Apple Inc.', price: 178.72, change: 1.23 },
-  { id: 2, symbol: 'MSFT', name: 'Microsoft Corporation', price: 337.50, change: -0.75 },
-  { id: 3, symbol: 'GOOGL', name: 'Alphabet Inc.', price: 129.27, change: 2.30 },
-  { id: 4, symbol: 'AMZN', name: 'Amazon.com Inc.', price: 145.80, change: 0.65 },
-];
-
 const Profile = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState({
@@ -34,7 +26,6 @@ const Profile = () => {
   });
   const [name, setName] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [watchlist, setWatchlist] = useState(dummyWatchlist);
   const [activeTab, setActiveTab] = useState('profile');
   const [isLoading, setIsLoading] = useState(false);
   const [isSavingPreferences, setIsSavingPreferences] = useState(false);
@@ -211,11 +202,6 @@ const Profile = () => {
     }
   };
 
-  const removeFromWatchlist = (itemId) => {
-    setWatchlist(watchlist.filter(item => item.id !== itemId));
-    toast.info('Stock removed from watchlist');
-  };
-
   if (isLoadingData) {
     return (
       <div className="container mx-auto py-16 px-4 text-center">
@@ -244,12 +230,6 @@ const Profile = () => {
             onClick={() => setActiveTab('preferences')}
           >
             Preferences
-          </button>
-          <button 
-            className={`px-6 py-3 font-medium ${activeTab === 'watchlist' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'}`}
-            onClick={() => setActiveTab('watchlist')}
-          >
-            Watchlist
           </button>
         </div>
         
@@ -328,50 +308,6 @@ const Profile = () => {
               >
                 {isSavingPreferences ? 'Saving...' : 'Save Preferences'}
               </button>
-            </div>
-          )}
-          
-          {activeTab === 'watchlist' && (
-            <div>
-              <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Your Watchlist</h2>
-              
-              {watchlist.length === 0 ? (
-                <p className="text-gray-600 dark:text-gray-400">Your watchlist is empty. Add some stocks to monitor them.</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-700">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Symbol</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Price</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Change</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                      {watchlist.map(stock => (
-                        <tr key={stock.id}>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{stock.symbol}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{stock.name}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${stock.price.toFixed(2)}</td>
-                          <td className={`px-6 py-4 whitespace-nowrap text-sm ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                            {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button 
-                              onClick={() => removeFromWatchlist(stock.id)}
-                              className="text-red-600 hover:text-red-900 dark:hover:text-red-400"
-                            >
-                              Remove
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
             </div>
           )}
         </div>
