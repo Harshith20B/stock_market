@@ -6,7 +6,11 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import VerifyOtp from './pages/VerifyOtp';
 import Profile from './pages/Profile';
+
 import HomePage from './pages/HomePage';
+
+import Watchlist from './pages/Watchlist';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,6 +40,12 @@ function App() {
           </div>
 
           <div className="flex items-center space-x-4">
+            {isLoggedIn && (
+              <Link to="/watchlist" className="text-white hover:text-blue-200">
+                Watchlist
+              </Link>
+            )}
+            
             <DarkModeToggle />
 
             {isLoggedIn ? (
@@ -81,6 +91,7 @@ function App() {
         </div>
       </nav>
 
+
       {/* Offset padding for fixed navbar */}
       <div className="pt-20 h-full">
         <Routes>
@@ -106,6 +117,24 @@ function App() {
         </Routes>
 
       </div>
+
+      <Routes>
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path="/watchlist" element={
+          <ProtectedRoute>
+            <Watchlist />
+          </ProtectedRoute>
+        } />
+        <Route path="/" element={<div className="container mx-auto py-8 px-4 text-center dark:text-white">Dashboard Coming Soon</div>} />
+      </Routes>
+
     </div>
   );
 }
