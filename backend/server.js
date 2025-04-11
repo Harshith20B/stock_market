@@ -7,6 +7,9 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const watchlistRoutes = require('./routes/watchlistRoutes');
 
+const stockRoutes = require('./routes/stockRoutes.js');
+
+
 dotenv.config();
 
 const app = express();
@@ -37,6 +40,7 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/watchlist', watchlistRoutes);
+app.use('/api/stocks', stockRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
