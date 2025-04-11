@@ -7,6 +7,9 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const watchlistRoutes = require('./routes/watchlistRoutes');
 
+const stockRoutes = require('./routes/stock.route.js');
+
+
 dotenv.config();
 
 const app = express();
