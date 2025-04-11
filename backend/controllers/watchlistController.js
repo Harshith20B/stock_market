@@ -1,32 +1,43 @@
 // controllers/watchlistController.js
-const Watchlist = require('../models/Watchlist');
+const User = require('../models/User');
+const Stock = require('../models/Stock');
 
-// Get user's watchlist
+// Get user's watchlist with detailed stock information
 const getWatchlist = async (req, res) => {
   try {
     const userId = req.session.user?.id || req.user._id;
     
-    // Find watchlist for user, or create one if it doesn't exist
-    let watchlist = await Watchlist.findOne({ user: userId });
+    // Find user and populate with watchlist symbols
+    const user = await User.findById(userId).select('watchlist');
     
-    if (!watchlist) {
-      // Create empty watchlist if none exists
-      watchlist = new Watchlist({ user: userId, stocks: [] });
-      await watchlist.save();
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
     
-    // Return watchlist stocks with temporary IDs for frontend use
-    const watchlistWithIds = watchlist.stocks.map((stock, index) => ({
-      _id: stock._id || index,
+    // If watchlist is empty, return empty array
+    if (!user.watchlist || user.watchlist.length === 0) {
+      return res.status(200).json({ watchlist: [] });
+    }
+    
+    // Extract symbols from user's watchlist
+    const symbols = user.watchlist.map(item => item.symbol);
+    
+    // Fetch stock details for the watchlist symbols
+    const stocks = await Stock.find({ symbol: { $in: symbols } })
+      .select('symbol name latestPrice latestChange lastUpdated');
+    
+    // Map the stock data to the watchlist format
+    const watchlistWithDetails = stocks.map(stock => ({
+      _id: stock._id,
       symbol: stock.symbol,
       name: stock.name,
-      price: stock.price,
-      change: stock.change,
+      price: stock.latestPrice,
+      change: stock.latestChange,
       lastUpdated: stock.lastUpdated
     }));
     
     res.status(200).json({ 
-      watchlist: watchlistWithIds
+      watchlist: watchlistWithDetails
     });
   } catch (error) {
     console.error('Error fetching watchlist:', error);
@@ -37,41 +48,53 @@ const getWatchlist = async (req, res) => {
 // Add stock to watchlist
 const addToWatchlist = async (req, res) => {
   try {
-    const { symbol, name, price, change } = req.body;
+    const { symbol } = req.body;
     const userId = req.session.user?.id || req.user._id;
     
-    if (!symbol || !name) {
-      return res.status(400).json({ message: 'Symbol and name are required' });
+    if (!symbol) {
+      return res.status(400).json({ message: 'Symbol is required' });
     }
     
-    // Find user's watchlist or create one
-    let watchlist = await Watchlist.findOne({ user: userId });
+    // Check if stock exists in database
+    const stock = await Stock.findOne({ symbol });
     
-    if (!watchlist) {
-      watchlist = new Watchlist({ user: userId, stocks: [] });
+    if (!stock) {
+      return res.status(404).json({ message: 'Stock not found' });
+    }
+    
+    // Find user
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
     }
     
     // Check if stock already exists in watchlist
-    const stockExists = watchlist.stocks.some(stock => stock.symbol === symbol);
+    const stockExists = user.watchlist.some(item => item.symbol === symbol);
     
     if (stockExists) {
       return res.status(400).json({ message: 'Stock already in watchlist' });
     }
     
     // Add stock to watchlist
-    watchlist.stocks.push({
+    user.watchlist.push({
       symbol,
-      name,
-      price: price || 0,
-      change: change || 0,
-      lastUpdated: Date.now()
+      addedAt: Date.now()
     });
     
-    await watchlist.save();
+    await user.save();
     
+    // Return the complete stock information
     res.status(200).json({ 
       message: 'Stock added to watchlist',
-      stock: watchlist.stocks[watchlist.stocks.length - 1]
+      stock: {
+        _id: stock._id,
+        symbol: stock.symbol,
+        name: stock.name,
+        price: stock.latestPrice,
+        change: stock.latestChange,
+        lastUpdated: stock.lastUpdated
+      }
     });
   } catch (error) {
     console.error('Error adding to watchlist:', error);
@@ -82,22 +105,27 @@ const addToWatchlist = async (req, res) => {
 // Remove stock from watchlist
 const removeFromWatchlist = async (req, res) => {
   try {
-    const { stockId } = req.params;
+    const { symbol } = req.params;
     const userId = req.session.user?.id || req.user._id;
     
-    // Find user's watchlist
-    const watchlist = await Watchlist.findOne({ user: userId });
+    // Find user
+    const user = await User.findById(userId);
     
-    if (!watchlist) {
-      return res.status(404).json({ message: 'Watchlist not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Check if stock exists in watchlist
+    const stockIndex = user.watchlist.findIndex(item => item.symbol === symbol);
+    
+    if (stockIndex === -1) {
+      return res.status(404).json({ message: 'Stock not found in watchlist' });
     }
     
     // Remove stock from watchlist
-    watchlist.stocks = watchlist.stocks.filter(stock => 
-      stock._id.toString() !== stockId
-    );
+    user.watchlist.splice(stockIndex, 1);
     
-    await watchlist.save();
+    await user.save();
     
     res.status(200).json({ 
       message: 'Stock removed from watchlist'
@@ -108,46 +136,8 @@ const removeFromWatchlist = async (req, res) => {
   }
 };
 
-// Update stock price data in watchlist
-const updateStockData = async (req, res) => {
-  try {
-    const { symbol, price, change } = req.body;
-    const userId = req.session.user?.id || req.user._id;
-    
-    // Find user's watchlist
-    const watchlist = await Watchlist.findOne({ user: userId });
-    
-    if (!watchlist) {
-      return res.status(404).json({ message: 'Watchlist not found' });
-    }
-    
-    // Find the stock and update it
-    const stockIndex = watchlist.stocks.findIndex(stock => stock.symbol === symbol);
-    
-    if (stockIndex === -1) {
-      return res.status(404).json({ message: 'Stock not found in watchlist' });
-    }
-    
-    // Update stock data
-    watchlist.stocks[stockIndex].price = price;
-    watchlist.stocks[stockIndex].change = change;
-    watchlist.stocks[stockIndex].lastUpdated = Date.now();
-    
-    await watchlist.save();
-    
-    res.status(200).json({ 
-      message: 'Stock data updated',
-      stock: watchlist.stocks[stockIndex]
-    });
-  } catch (error) {
-    console.error('Error updating stock data:', error);
-    res.status(500).json({ message: 'Something went wrong', error: error.message });
-  }
-};
-
 module.exports = {
   getWatchlist,
   addToWatchlist,
-  removeFromWatchlist,
-  updateStockData
+  removeFromWatchlist
 };

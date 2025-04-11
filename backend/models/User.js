@@ -6,6 +6,12 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   isVerified: { type: Boolean, default: false },
+  watchlist: [
+    {
+      symbol: { type: String, required: true },
+      addedAt: { type: Date, default: Date.now }
+    }
+  ],
   preferences: {
     stockCategories: [{ type: String }],
     lastUpdated: { type: Date, default: Date.now }

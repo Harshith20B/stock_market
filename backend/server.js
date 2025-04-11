@@ -2,10 +2,12 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const session = require('express-session');
+const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const watchlistRoutes = require('./routes/watchlistRoutes');
-require('dotenv').config();
+
+dotenv.config();
 
 const app = express();
 
@@ -47,13 +49,27 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Something went wrong', error: err.message });
 });
 
+// MongoDB Connection
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('MongoDB connected');
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+};
+
 const PORT = process.env.PORT || 5000;
 
 connectDB()
   .then(() => {
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
   .catch((error) => {
-    console.error("❌ MongoDB connection failed:", error);
+    console.error("MongoDB connection failed:", error);
     process.exit(1);
   });

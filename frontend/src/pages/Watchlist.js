@@ -53,7 +53,7 @@ const Watchlist = () => {
     }
   };
 
-  const removeFromWatchlist = async (stockId) => {
+  const removeFromWatchlist = async (symbol) => {
     try {
       const token = localStorage.getItem('token');
       
@@ -62,7 +62,7 @@ const Watchlist = () => {
         return;
       }
       
-      const response = await fetch(`${API_URL}/api/watchlist/${stockId}`, {
+      const response = await fetch(`${API_URL}/api/watchlist/${symbol}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -83,7 +83,7 @@ const Watchlist = () => {
       }
       
       // Update the watchlist state
-      setWatchlist(watchlist.filter(stock => stock._id !== stockId));
+      setWatchlist(watchlist.filter(stock => stock.symbol !== symbol));
       toast.success('Stock removed from watchlist');
     } catch (error) {
       console.error('Error removing from watchlist:', error);
@@ -138,7 +138,7 @@ const Watchlist = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button 
-                          onClick={() => removeFromWatchlist(stock._id)}
+                          onClick={() => removeFromWatchlist(stock.symbol)}
                           className="text-red-600 hover:text-red-900 dark:hover:text-red-400"
                         >
                           Remove

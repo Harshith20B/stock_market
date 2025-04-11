@@ -13,9 +13,6 @@ router.get('/', watchlistController.getWatchlist);
 router.post('/', watchlistController.addToWatchlist);
 
 // Remove stock from watchlist
-router.delete('/:stockId', watchlistController.removeFromWatchlist);
-
-// Update stock data in watchlist
-router.put('/:symbol', watchlistController.updateStockData);
+router.delete('/:symbol', watchlistController.removeFromWatchlist);
 
 module.exports = router;

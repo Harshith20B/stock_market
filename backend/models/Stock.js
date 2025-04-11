@@ -19,8 +19,15 @@ const stockDataSchema = new mongoose.Schema({
 
 const stockSchema = new mongoose.Schema({
   symbol: { type: String, required: true, unique: true },
-  data: [stockDataSchema]
+  name: { type: String, required: true },
+  data: [stockDataSchema],
+  latestPrice: { type: Number, default: 0 },
+  latestChange: { type: Number, default: 0 },
+  lastUpdated: { type: Date, default: Date.now }
 }, { timestamps: true });
+
+// Index for faster lookups
+stockSchema.index({ symbol: 1 });
 
 const Stock = mongoose.model('Stock', stockSchema);
 
