@@ -116,6 +116,14 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    // Create JWT token
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || 'your_jwt_secret_key',
+      { expiresIn: '1d' }
+    );
+
+    // Set session
     req.session.user = {
       id: user._id,
       name: user.name,
@@ -123,12 +131,28 @@ const login = async (req, res) => {
       isVerified: user.isVerified
     };
 
-    res.status(200).json({
-      message: 'Login successful',
-      user: req.session.user
+    // Wait for session to be saved
+    req.session.save(err => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ message: 'Session error' });
+      }
+      
+      // Return user and token
+      res.status(200).json({
+        message: 'Login successful',
+        token: token, // Include the token in the response
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          isVerified: user.isVerified
+        }
+      });
     });
 
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ message: 'Something went wrong', error: error.message });
   }
 };
@@ -136,9 +160,11 @@ const login = async (req, res) => {
 const logout = (req, res) => {
   try {
     req.session.destroy(() => {
+      res.clearCookie('connect.sid'); // Clear the session cookie
       res.status(200).json({ message: 'Logout successful' });
     });
   } catch (error) {
+    console.error('Logout error:', error);
     res.status(500).json({ message: 'Something went wrong', error: error.message });
   }
 };
