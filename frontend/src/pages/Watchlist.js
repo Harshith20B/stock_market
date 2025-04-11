@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useStockStore } from '../store/useStockStore';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const Watchlist = () => {
   const [watchlist, setWatchlist] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const { setSelectedStock } = useStockStore();
 
   useEffect(() => {
     fetchWatchlist();
@@ -53,7 +57,10 @@ const Watchlist = () => {
     }
   };
 
-  const removeFromWatchlist = async (symbol) => {
+  const removeFromWatchlist = async (symbol, event) => {
+    // Prevent row click event from firing
+    event.stopPropagation();
+    
     try {
       const token = localStorage.getItem('token');
       
@@ -91,6 +98,18 @@ const Watchlist = () => {
     }
   };
 
+  const handleStockClick = (stock) => {
+    // Set the selected stock in the global store
+    setSelectedStock({
+      symbol: stock.symbol,
+      name: stock.name,
+      lastClose: stock.price
+    });
+    
+    // Navigate to the home page to show stock details
+    navigate('/');
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto py-16 px-4 text-center">
@@ -103,10 +122,10 @@ const Watchlist = () => {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container py-8 px-4">
       <ToastContainer position="top-right" autoClose={3000} />
       
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
         <div className="p-6">
           <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Your Watchlist</h2>
           
@@ -129,7 +148,11 @@ const Watchlist = () => {
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {watchlist.map(stock => (
-                    <tr key={stock._id}>
+                    <tr 
+                      key={stock._id} 
+                      onClick={() => handleStockClick(stock)}
+                      className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
+                    >
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{stock.symbol}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{stock.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">${stock.price.toFixed(2)}</td>
@@ -138,7 +161,7 @@ const Watchlist = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button 
-                          onClick={() => removeFromWatchlist(stock.symbol)}
+                          onClick={(e) => removeFromWatchlist(stock.symbol, e)}
                           className="text-red-600 hover:text-red-900 dark:hover:text-red-400"
                         >
                           Remove

@@ -7,6 +7,7 @@ import VerifyOtp from './pages/VerifyOtp';
 import Profile from './pages/Profile';
 import HomePage from './pages/HomePage';
 import Watchlist from './pages/Watchlist';
+import MainLayout from './components/MainLayout';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -95,7 +96,7 @@ function App() {
       </nav>
 
       {/* Main content area with padding for fixed navbar */}
-      <div className="pt-20 pb-8 px-4 container mx-auto">
+      <div className="pt-20 pb-8 px-4 container mx-auto h-screen">
         <Routes>
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
@@ -107,12 +108,16 @@ function App() {
           } />
           <Route path="/watchlist" element={
             <ProtectedRoute>
-              <Watchlist />
+              <MainLayout>
+                <Watchlist />
+              </MainLayout>
             </ProtectedRoute>
           } />
           <Route path="/" element={
             <ProtectedRoute>
-              <HomePage />
+              <MainLayout>
+                <HomePage />
+              </MainLayout>
             </ProtectedRoute>
           } />
           {/* Fallback route for any unmatched routes */}
