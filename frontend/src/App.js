@@ -83,27 +83,27 @@ function App() {
 
       {/* Offset padding for fixed navbar */}
       <div className="pt-20 h-full">
-      <Routes>
-  <Route path="/signup" element={<Signup />} />
-  <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
-  <Route path="/verify-otp" element={<VerifyOtp />} />
-  <Route
-    path="/profile"
-    element={
-      <ProtectedRoute>
-        <Profile />
-      </ProtectedRoute>
-    }
-  />
-  <Route
-    path="/"
-    element={
-      <ProtectedRoute>
-        <HomePage />
-      </ProtectedRoute>
-    }
-  />
-</Routes>
+        <Routes>
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
 
       </div>
     </div>
