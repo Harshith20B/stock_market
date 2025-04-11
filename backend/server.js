@@ -4,6 +4,7 @@ const cors = require('cors');
 const session = require('express-session');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const stockRoutes = require('./routes/stock.route.js');
 const { connectDB } = require('./lib/db'); // ✅ Import connectDB
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use(
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/stocks', stockRoutes);
 
 // Connect to DB and start server
 const PORT = process.env.PORT || 5000;
