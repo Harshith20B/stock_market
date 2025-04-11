@@ -57,7 +57,7 @@ const StockSidebar = () => {
                     >
                         <div className="flex justify-between items-center">
                             <div>
-                                <p className="font-medium">{stock.symbol}</p>
+                            <p className="font-medium dark:text-white">{stock.symbol}</p>
                             </div>
 
                             <div className="flex flex-col items-end">

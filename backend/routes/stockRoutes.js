@@ -1,19 +1,19 @@
-const express = require("express");
+const express = require('express');
 const {
   getAllStocks,
   getStockBySymbol,
   getStockInsights
-} = require("../controllers/stockController");
+} = require('../controllers/stockController');
 
 const router = express.Router();
 
-// Get all stock symbols (for left sidebar)
-router.get("/", getAllStocks);
+// Get all stocks for the sidebar
+router.get('/', getAllStocks);
 
-// Get data for a specific stock (for right side view)
-router.get("/:symbol", getStockBySymbol);
+// Get detailed data for a specific stock
+router.get('/:symbol', getStockBySymbol);
 
-// Get insights for a specific stock (ML model)
-router.get("/:symbol/insights", getStockInsights);
+// Get insights for a specific stock
+router.get('/:symbol/insights', getStockInsights);
 
 module.exports = router;

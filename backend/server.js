@@ -40,7 +40,7 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/watchlist', watchlistRoutes);
-app.use('/api/stock', stockRoutes);
+app.use('/api/stocks', stockRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

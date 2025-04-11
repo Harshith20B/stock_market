@@ -26,8 +26,8 @@ const StockDetails = () => {
   if (isStockDetailsLoading) {
     return (
       <div className="flex-1 flex flex-col h-full">
-        <div className="p-4 border-b bg-base-200 sticky top-0 z-10">
-          <h2 className="text-2xl font-semibold text-base-content">
+        <div className="p-4 border-b bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">
             Loading stock details...
           </h2>
         </div>
@@ -38,8 +38,8 @@ const StockDetails = () => {
   if (!selectedStock || !stockDetails) {
     return (
       <div className="flex-1 flex flex-col h-full">
-        <div className="p-4 border-b bg-base-200 sticky top-0 z-10">
-          <h2 className="text-2xl font-semibold text-base-content">
+        <div className="p-4 border-b bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">
             No stock selected
           </h2>
         </div>
@@ -51,13 +51,13 @@ const StockDetails = () => {
   if (stockData.length === 0) {
     return (
       <div className="flex-1 flex flex-col h-full">
-        <div className="p-4 border-b bg-base-200 sticky top-0 z-10">
-          <h2 className="text-2xl font-semibold text-base-content">
+        <div className="p-4 border-b bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">
             {selectedStock.symbol}
           </h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
-          <p>No stock data available</p>
+          <p className="text-gray-700 dark:text-gray-300">No stock data available</p>
         </div>
       </div>
     );
@@ -83,37 +83,41 @@ const StockDetails = () => {
   return (
     <div className="flex-1 flex flex-col h-full">
       {/* Sticky Header */}
-      <div className="p-4 border-b bg-base-200 sticky top-0 z-10">
-        <h2 className="text-2xl font-semibold text-base-content">
+      <div className="p-4 border-b bg-gray-100 dark:bg-gray-800 sticky top-0 z-10">
+        <h2 className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">
           {selectedStock.symbol}
         </h2>
       </div>
 
       {/* Scrollable Details */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-base-content">Latest Data</h3>
-          <div><strong>Date:</strong> {new Date(latest.date).toLocaleDateString()}</div>
-          <div><strong>Open:</strong> {latest.open}</div>
-          <div><strong>Close:</strong> {latest.close}</div>
-          <div><strong>High:</strong> {latest.high}</div>
-          <div><strong>Low:</strong> {latest.low}</div>
-          <div><strong>VWAP:</strong> {latest.vwap}</div>
-          <div><strong>Volume:</strong> {latest.volume}</div>
-          <div><strong>Turnover:</strong> {latest.turnover}</div>
-          <div><strong>Trades:</strong> {latest.trades}</div>
-          <div><strong>% Deliverable:</strong> {latest.percentDeliverable}%</div>
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 text-gray-800 dark:text-gray-200">
+        <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Latest Data</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div><strong className="text-gray-700 dark:text-gray-300">Date:</strong> {new Date(latest.date).toLocaleDateString()}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Open:</strong> {latest.open}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Close:</strong> {latest.close}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">High:</strong> {latest.high}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Low:</strong> {latest.low}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">VWAP:</strong> {latest.vwap}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Volume:</strong> {latest.volume}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Turnover:</strong> {latest.turnover}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Trades:</strong> {latest.trades}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">% Deliverable:</strong> {latest.percentDeliverable}%</div>
+          </div>
         </div>
 
-        <hr className="my-4 border-gray-400" />
+        <hr className="my-4 border-gray-300 dark:border-gray-700" />
 
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold text-base-content">5-Day Summary</h3>
-          <div><strong>Average Volume:</strong> {averageVolume}</div>
-          <div><strong>Average VWAP:</strong> {averageVWAP}</div>
-          <div><strong>Average % Deliverable:</strong> {averageDeliverable}%</div>
-          <div><strong>Highest High:</strong> {highestHigh}</div>
-          <div><strong>Lowest Low:</strong> {lowestLow}</div>
+        <div className="space-y-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">5-Day Summary</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div><strong className="text-gray-700 dark:text-gray-300">Average Volume:</strong> {averageVolume}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Average VWAP:</strong> {averageVWAP}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Average % Deliverable:</strong> {averageDeliverable}%</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Highest High:</strong> {highestHigh}</div>
+            <div><strong className="text-gray-700 dark:text-gray-300">Lowest Low:</strong> {lowestLow}</div>
+          </div>
         </div>
         <div ref={detailsEndRef} />
       </div>
