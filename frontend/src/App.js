@@ -1,21 +1,18 @@
-// App.jsx
 import React, { useState, useEffect } from 'react';
-import { Link, Routes, Route, Navigate } from 'react-router-dom';
+import { Link, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import DarkModeToggle from './components/DarkModeToggle';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import VerifyOtp from './pages/VerifyOtp';
 import Profile from './pages/Profile';
-
 import HomePage from './pages/HomePage';
-
 import Watchlist from './pages/Watchlist';
-
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -24,14 +21,27 @@ function App() {
     setUser(storedUser);
   }, []);
 
+  // Close profile menu when changing routes
+  useEffect(() => {
+    setProfileMenuOpen(false);
+  }, [location.pathname]);
+
   const toggleProfileMenu = () => setProfileMenuOpen(!profileMenuOpen);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setUser(null);
+    setProfileMenuOpen(false);
+  };
 
   const ProtectedRoute = ({ children }) => {
     return isLoggedIn ? children : <Navigate to="/login" />;
   };
 
   return (
-    <div className="dark:bg-darkBackground bg-lightBackground h-screen overflow-hidden">
+    <div className="dark:bg-darkBackground bg-lightBackground min-h-screen">
       {/* Fixed Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 p-4 text-white dark:bg-gray-900 bg-blue-600 shadow">
         <div className="container mx-auto flex justify-between items-center">
@@ -62,18 +72,11 @@ function App() {
                     <Link
                       to="/profile"
                       className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={() => setProfileMenuOpen(false)}
                     >
                       Edit Profile
                     </Link>
                     <button
-                      onClick={() => {
-                        localStorage.removeItem('user');
-                        localStorage.removeItem('token');
-                        setIsLoggedIn(false);
-                        setUser(null);
-                        setProfileMenuOpen(false);
-                      }}
+                      onClick={handleLogout}
                       className="block px-4 py-2 w-full text-left hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       Logout
@@ -91,50 +94,31 @@ function App() {
         </div>
       </nav>
 
-
-      {/* Offset padding for fixed navbar */}
-      <div className="pt-20 h-full">
+      {/* Main content area with padding for fixed navbar */}
+      <div className="pt-20 pb-8 px-4 container mx-auto">
         <Routes>
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
           <Route path="/verify-otp" element={<VerifyOtp />} />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          } />
+          <Route path="/watchlist" element={
+            <ProtectedRoute>
+              <Watchlist />
+            </ProtectedRoute>
+          } />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          } />
+          {/* Fallback route for any unmatched routes */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-
       </div>
-
-      <Routes>
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUser={setUser} />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route path="/profile" element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        } />
-        <Route path="/watchlist" element={
-          <ProtectedRoute>
-            <Watchlist />
-          </ProtectedRoute>
-        } />
-        <Route path="/" element={<div className="container mx-auto py-8 px-4 text-center dark:text-white">Dashboard Coming Soon</div>} />
-      </Routes>
-
     </div>
   );
 }
